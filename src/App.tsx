@@ -1,81 +1,109 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-const testState: number[][] = [
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-];
-
-function onClick(i: number)
-{
-  console.log("Clicked" + i);
-}
-
-function createRow(col: number)
-{
-  const list: any[] = [];
-  for (let i: number = 0; i < 10; ++i)
-  {
-    const block: any = <div className="Block" onClick={onClick.bind(null, i)}>{testState[col][i]}</div>;
-    list.push(block);
+class IBlockState {
+  constructor(
+    public isMine: boolean,
+    public state: number) {
   }
-  return list;
 }
 
-function createColumn()
+function getAppearClass(state: number)
+{
+  switch (state)
+  {
+    case 0:
+      return "Block";
+    default:
+      return "Open";
+  }
+}
+
+function createGameGrid(col: number, row: number, gridState: IBlockState[], call: Function)
 {
   const list: any[] = [];
-  for (let i = 0; i < 10; ++i)
+  for (let i = 0; i < row; ++i)
   {
-    const div = <div className="Row"> {createRow(i)}</div>;
-    list.push(div);
+    for (let j: number = 0; j < col; ++j)
+    {
+      const div = <div 
+        className={getAppearClass(gridState[j + i * col].state)}
+        onClick={call.bind(null, j + i * col)}
+        key={`${i}_${j}`}>
+        { gridState[j + i * col].state === 0 ? "" : gridState[j + i * col].isMine.toString()}
+      </div>;
+      list.push(div);
+    }
   }
 
   return list;
 }
 
-function createGame()
+function createGame(col: number, row: number, gridState: IBlockState[], call: Function)
 {
   return (
-    <div className='Column'>
-      {createColumn()}
+    <div className='Grid'>
+      {createGameGrid(col, row, gridState, call)}
     </div>
   )
 }
 
+
+function getInitState(col: number, row:number)
+{
+  const initGridState: IBlockState[] = [];
+  for(let i=0; i< col * row; ++i)
+  {
+    initGridState.push(new IBlockState(Math.round(Math.random()) === 1, 0));
+  }
+  return initGridState;
+}
+
 function App()
 {
+  const [col, setCol] = useState(5);
+  const [row, setRow] = useState(5);
+  const [gridState, setGridState] = useState(getInitState(5, 5));
 
-
-  const list: any[] = [];
-
-  for (let i = 0; i < 10; ++i)
-  {
-    const div = <div className="Row"></div>;
-    for (let j = 0; j < 10; ++j)
-    {
-      const block: any = <div className="Block"></div>;
-      React.createElement(block, div);
-    }
-    list.push(div);
-  }
+  useEffect( () => {
+    document.documentElement.style.setProperty('--col',`${col}`);
+    document.documentElement.style.setProperty('--row',`${row}`);
+  });
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
       </header>
-      {createGame()}
+
+      {createGame(col, row, gridState, 
+        (i: number) => {
+          gridState[i].state = 1;
+          setGridState([...gridState]);
+          console.log("Clicked" +(i) );
+          console.log("Clicked" +gridState[i].state );
+        })}
+
+      <div onClick={ 
+        () => {
+          setRow(5)
+          setCol(5)
+          setGridState(getInitState(5, 5))
+        }}>5*5</div>
+      <div onClick={ 
+        () => {
+          setRow(10)
+          setCol(10)
+          setGridState(getInitState(10, 10))
+        }}>10*10</div>
+
+      <div onClick={ 
+        () => {
+          setGridState(getInitState(col, row))
+        }}>Reset</div>
     </div>
+
   );
 }
 
