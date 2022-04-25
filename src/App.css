@@ -37,9 +37,13 @@
 }
 
 .Grid {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
   display: grid;
-  grid-template-columns: repeat(var(--col),50px);
-  grid-template-rows: repeat(var(--row),50px);
+  grid-template-columns: repeat(var(--col),40px);
+  grid-template-rows: repeat(var(--row),40px);
 }
 
 .Block {

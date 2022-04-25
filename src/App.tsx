@@ -2,6 +2,20 @@ import { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+interface ILevel{
+  col: number;
+  row: number;
+  mine: number
+}
+
+const levelSetting: ILevel[] =
+[
+  {col: 9, row: 9, mine: 10},
+  {col: 16, row: 16, mine: 40},
+  {col: 30, row: 16, mine: 99},
+]
+
+
 class IBlockState {
   constructor(
     public isMine: boolean,
@@ -50,25 +64,46 @@ function createGame(col: number, row: number, gridState: IBlockState[], call: Fu
 }
 
 
-function getInitState(col: number, row:number)
+function getInitGrid(level: ILevel)
 {
-  const initGridState: IBlockState[] = [];
-  for(let i=0; i< col * row; ++i)
+  console.log("getInitGrid");
+  // Check the count of mines is legal.
+  const totalGridCount: number = level.col * level.row;
+  if(level.mine >= totalGridCount)
   {
-    initGridState.push(new IBlockState(Math.round(Math.random()) === 1, 0));
+    level.mine = totalGridCount - 1;
+  }
+
+  // Generation mines random index.
+  const mineIndex: number[] = [];
+  for (let i = 0; i < level.mine; ++i)
+  {
+    let randomIdx: number = Math.floor( Math.random() * totalGridCount );
+    while(mineIndex.includes(randomIdx))
+    {
+      randomIdx = (randomIdx + 1) % totalGridCount;
+    }
+    mineIndex.push(randomIdx);
+  }
+
+  const initGridState: IBlockState[] = [];
+  for (let i = 0; i < totalGridCount; ++i)
+  {
+    initGridState.push(new IBlockState(mineIndex.includes(i), 0));
   }
   return initGridState;
 }
 
+const initGrid = getInitGrid(levelSetting[0])
+
 function App()
 {
-  const [col, setCol] = useState(5);
-  const [row, setRow] = useState(5);
-  const [gridState, setGridState] = useState(getInitState(5, 5));
+  const [level, setLevel] = useState(levelSetting[0]);
+  const [gridState, setGridState] = useState(initGrid);
 
   useEffect( () => {
-    document.documentElement.style.setProperty('--col',`${col}`);
-    document.documentElement.style.setProperty('--row',`${row}`);
+    document.documentElement.style.setProperty('--col',`${level.col}`);
+    document.documentElement.style.setProperty('--row',`${level.row}`);
   });
 
   return (
@@ -77,7 +112,7 @@ function App()
         <img src={logo} className="App-logo" alt="logo" />
       </header>
 
-      {createGame(col, row, gridState, 
+      {createGame(level.col, level.row, gridState, 
         (i: number) => {
           gridState[i].state = 1;
           setGridState([...gridState]);
@@ -87,20 +122,24 @@ function App()
 
       <div onClick={ 
         () => {
-          setRow(5)
-          setCol(5)
-          setGridState(getInitState(5, 5))
+          setLevel(levelSetting[0]);
+          setGridState(getInitGrid(levelSetting[0]));
         }}>5*5</div>
       <div onClick={ 
         () => {
-          setRow(10)
-          setCol(10)
-          setGridState(getInitState(10, 10))
+          setLevel(levelSetting[1]);
+          setGridState(getInitGrid(levelSetting[1]));
         }}>10*10</div>
 
       <div onClick={ 
         () => {
-          setGridState(getInitState(col, row))
+          setLevel(levelSetting[2]);
+          setGridState(getInitGrid(levelSetting[2]));
+        }}>10*10</div>
+
+      <div onClick={ 
+        () => {
+          setGridState(getInitGrid(level));
         }}>Reset</div>
     </div>
 
