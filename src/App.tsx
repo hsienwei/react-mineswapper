@@ -23,15 +23,60 @@ class IBlockState {
   }
 }
 
-function getAppearClass(state: number)
+enum GridState{
+  BLOCKED,
+  OPENED,
+  HOLD,
+  BOMB
+}
+
+function getAppearClass(state: GridState)
 {
   switch (state)
   {
-    case 0:
+    case GridState.BLOCKED:
       return "Block";
+    case GridState.OPENED:
+      return "Open";
+    case GridState.HOLD:
+      return "Hold";
+    case GridState.BOMB:
+        return "Dead";
     default:
       return "Open";
   }
+}
+
+function getMineCount(gridState: IBlockState[], index: number, col: number)
+{
+  const targetCol: number = index % col;
+  const targetRow: number = Math.floor(index / col);
+
+  let totalCount: number = 0;
+
+  for (let i = targetRow - 1; i <= targetRow + 1; ++i)
+  {
+    if(i < 0)  continue;
+    if(i >= Math.floor(gridState.length / col))  continue;
+    for (let j: number = targetCol - 1; j <= targetCol + 1; ++j)
+    {
+      if(j < 0)  continue;
+      if(j >= col)  continue;
+      totalCount += gridState[j + i * col].isMine ? 1 : 0;
+    }
+  }
+
+  return totalCount;
+}
+
+function getGridDisplay(gridState: IBlockState[], index: number, col: number)
+{
+  if (gridState[index].state !== GridState.OPENED) 
+    return "";
+  if(gridState[index].isMine)
+    return "O";
+  else
+    return getMineCount(gridState,index, col);
 }
 
 function createGameGrid(col: number, row: number, gridState: IBlockState[], call: Function)
@@ -41,12 +86,15 @@ function createGameGrid(col: number, row: number, gridState: IBlockState[], call
   {
     for (let j: number = 0; j < col; ++j)
     {
-      const div = <div 
+      const div = <div
         className={getAppearClass(gridState[j + i * col].state)}
-        onClick={call.bind(null, j + i * col)}
+        onMouseUp={call.bind(null, j + i * col)}
         key={`${i}_${j}`}>
-        { gridState[j + i * col].state === 0 ? "" : gridState[j + i * col].isMine.toString()}
+        {getGridDisplay(gridState, j + i * col, col)}
       </div>;
+
+
+
       list.push(div);
     }
   }
@@ -96,6 +144,12 @@ function getInitGrid(level: ILevel)
 
 const initGrid = getInitGrid(levelSetting[0])
 
+document.documentElement.addEventListener('contextmenu', function (ev)
+{
+  ev.preventDefault();
+  return false;
+}, false);
+
 function App()
 {
   const [level, setLevel] = useState(levelSetting[0]);
@@ -104,7 +158,7 @@ function App()
   useEffect( () => {
     document.documentElement.style.setProperty('--col',`${level.col}`);
     document.documentElement.style.setProperty('--row',`${level.row}`);
-  });
+  }, [level]);
 
   return (
     <div className="App">
@@ -113,11 +167,26 @@ function App()
       </header>
 
       {createGame(level.col, level.row, gridState, 
-        (i: number) => {
-          gridState[i].state = 1;
+        ( i: number,ev: MouseEvent) => {
+          if (ev.button === GridState.BLOCKED)
+          {
+            if (gridState[i].state !== GridState.HOLD)
+            {
+              if(gridState[i].isMine)  gridState[i].state = GridState.BOMB;
+              else gridState[i].state = GridState.OPENED;
+            }
+          }
+          else if (ev.button === GridState.HOLD)
+          {
+            if (gridState[i].state === GridState.HOLD)
+              gridState[i].state = GridState.BLOCKED;
+            else
+              gridState[i].state = GridState.HOLD;
+            setGridState([...gridState]);
+          }
           setGridState([...gridState]);
-          console.log("Clicked" +(i) );
-          console.log("Clicked" +gridState[i].state );
+            console.log("Clicked" + (i));
+            console.log("Clicked" + gridState[i].state);
         })}
 
       <div onClick={ 

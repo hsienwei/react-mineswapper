@@ -46,13 +46,25 @@
   grid-template-rows: repeat(var(--row),40px);
 }
 
+
+
+
 .Block {
   width: auto;
   height: auto;
   border-width: 2px;
   border-color: red;
   border-style: solid;
-  background: black;
+  background: gray;
+}
+
+.Hold {
+  width: auto;
+  height: auto;
+  border-width: 2px;
+  border-color: green;
+  border-style: solid;
+  background: green;
 }
 
 .Open {
@@ -60,5 +72,15 @@
   height: auto;
   border-width: 2px;
   border-color: red;
-  border-style: solid
+  border-style: solid;
+  background: white;
+}
+
+.Dead {
+  width: auto;
+  height: auto;
+  border-width: 2px;
+  border-color: red;
+  border-style: solid;
+  background: red;
 }
