@@ -17,6 +17,8 @@ const levelSetting: ILevel[] =
 
 
 class IBlockState {
+  public mineAroundCount: number = 0;
+
   constructor(
     public isMine: boolean,
     public state: number) {
@@ -30,14 +32,14 @@ enum GridState{
   BOMB
 }
 
-function getAppearClass(state: GridState)
+function getAppearClass(state: IBlockState)
 {
-  switch (state)
+  switch (state.state)
   {
     case GridState.BLOCKED:
       return "Block";
     case GridState.OPENED:
-      return "Open";
+      return `Open Count${state.mineAroundCount}`;
     case GridState.HOLD:
       return "Hold";
     case GridState.BOMB:
@@ -69,32 +71,34 @@ function getMineCount(gridState: IBlockState[], index: number, col: number)
   return totalCount;
 }
 
-function getGridDisplay(gridState: IBlockState[], index: number, col: number)
+function getGridDisplay(gridState: IBlockState[], index: number)
 {
-  if (gridState[index].state !== GridState.OPENED) 
-    return "";
-  if(gridState[index].isMine)
-    return "O";
-  else
-    return getMineCount(gridState,index, col);
+
+  if (gridState[index].state === GridState.BOMB)
+    return "💣";
+
+  if (gridState[index].state === GridState.OPENED)
+    return gridState[index].mineAroundCount === 0 ? "" : gridState[index].mineAroundCount;
+
+  if (gridState[index].state === GridState.HOLD)
+    return "🚩";
+
+  return "";
 }
 
 function createGameGrid(col: number, row: number, gridState: IBlockState[], call: Function)
 {
   const list: any[] = [];
-  for (let i = 0; i < row; ++i)
+  for (let i: number = 0; i < row; ++i)
   {
     for (let j: number = 0; j < col; ++j)
     {
       const div = <div
-        className={getAppearClass(gridState[j + i * col].state)}
+        className={getAppearClass(gridState[j + i * col])}
         onMouseUp={call.bind(null, j + i * col)}
         key={`${i}_${j}`}>
-        {getGridDisplay(gridState, j + i * col, col)}
+        {getGridDisplay(gridState, j + i * col)}
       </div>;
-
-
-
       list.push(div);
     }
   }
@@ -134,12 +138,52 @@ function getInitGrid(level: ILevel)
     mineIndex.push(randomIdx);
   }
 
+  // Create block state.
   const initGridState: IBlockState[] = [];
   for (let i = 0; i < totalGridCount; ++i)
   {
     initGridState.push(new IBlockState(mineIndex.includes(i), 0));
   }
+
+  // Calculate around mine count.
+  for (let i = 0; i < totalGridCount; ++i)
+  {
+    initGridState[i].mineAroundCount = getMineCount(initGridState, i, level.col)
+  }
   return initGridState;
+}
+
+function open(index:number, gridState: IBlockState[], col: number)
+{
+  const indexList: number[] = [index];
+  let checkIndex: number = 0;
+
+  while (checkIndex < indexList.length)
+  {
+    const currentIndex = indexList[checkIndex];
+    if (gridState[currentIndex].mineAroundCount !== 0)
+      gridState[currentIndex].state = GridState.OPENED;
+    else
+    {
+      gridState[currentIndex].state = GridState.OPENED;
+      const targetCol: number = currentIndex % col;
+      const targetRow: number = Math.floor(currentIndex / col);
+
+      for (let i = targetRow - 1; i <= targetRow + 1; ++i)
+      {
+        if (i < 0) continue;
+        if (i >= Math.floor(gridState.length / col)) continue;
+        for (let j: number = targetCol - 1; j <= targetCol + 1; ++j)
+        {
+          if (j < 0) continue;
+          if (j >= col) continue;
+          if(!indexList.includes(j + i * col))
+            indexList.push(j + i * col);
+        }
+      }
+    }
+    checkIndex++;
+  }
 }
 
 const initGrid = getInitGrid(levelSetting[0])
@@ -167,44 +211,46 @@ function App()
       </header>
 
       {createGame(level.col, level.row, gridState, 
-        ( i: number,ev: MouseEvent) => {
-          if (ev.button === GridState.BLOCKED)
+        (i: number, ev: MouseEvent) =>
+        {
+          if (ev.button === 0)
           {
             if (gridState[i].state !== GridState.HOLD)
             {
-              if(gridState[i].isMine)  gridState[i].state = GridState.BOMB;
-              else gridState[i].state = GridState.OPENED;
+              if (gridState[i].isMine) 
+                gridState[i].state = GridState.BOMB;
+              else
+                open(i, gridState, level.col);
             }
           }
-          else if (ev.button === GridState.HOLD)
+          else if (ev.button === 2)
           {
             if (gridState[i].state === GridState.HOLD)
               gridState[i].state = GridState.BLOCKED;
-            else
+            else if (gridState[i].state === GridState.BLOCKED)
               gridState[i].state = GridState.HOLD;
-            setGridState([...gridState]);
           }
           setGridState([...gridState]);
-            console.log("Clicked" + (i));
-            console.log("Clicked" + gridState[i].state);
+          console.log("Clicked" + (i));
+          console.log("Clicked" + gridState[i].state);
         })}
 
       <div onClick={ 
         () => {
           setLevel(levelSetting[0]);
           setGridState(getInitGrid(levelSetting[0]));
-        }}>5*5</div>
+        }}>{`${levelSetting[0].col} * ${levelSetting[0].row}  mine: ${levelSetting[0].mine}` }</div>
       <div onClick={ 
         () => {
           setLevel(levelSetting[1]);
           setGridState(getInitGrid(levelSetting[1]));
-        }}>10*10</div>
+        }}>{`${levelSetting[1].col} * ${levelSetting[1].row}  mine: ${levelSetting[1].mine}` }</div>
 
       <div onClick={ 
         () => {
           setLevel(levelSetting[2]);
           setGridState(getInitGrid(levelSetting[2]));
-        }}>10*10</div>
+        }}>{`${levelSetting[2].col} * ${levelSetting[2].row}  mine: ${levelSetting[2].mine}` }</div>
 
       <div onClick={ 
         () => {

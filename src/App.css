@@ -42,8 +42,8 @@
   margin-right: auto;
   width: fit-content;
   display: grid;
-  grid-template-columns: repeat(var(--col),40px);
-  grid-template-rows: repeat(var(--row),40px);
+  grid-template-columns: repeat(var(--col),30px);
+  grid-template-rows: repeat(var(--row),30px);
 }
 
 
@@ -52,35 +52,71 @@
 .Block {
   width: auto;
   height: auto;
-  border-width: 2px;
-  border-color: red;
-  border-style: solid;
-  background: gray;
+  border-width: 4px;
+  border-color: #ffffff;
+  border-style: outset;
+  background: #dddddd;
+
 }
 
 .Hold {
   width: auto;
   height: auto;
-  border-width: 2px;
-  border-color: green;
-  border-style: solid;
-  background: green;
+  border-width: 4px;
+  border-color: #ffffff;
+  border-style: outset;
+  background: #dddddd;
 }
 
 .Open {
   width: auto;
   height: auto;
-  border-width: 2px;
-  border-color: red;
+  border-width: 1px;
+  border-color: #bbbbbb;
   border-style: solid;
-  background: white;
+  background: #eeeeee;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.Count1 {
+  color:blue;
+}
+
+.Count2 {
+  color:green;
+}
+
+.Count3 {
+  color:red;
+}
+
+.Count4 {
+  color:#000080;
+}
+
+.Count5 {
+  color:#800000;
+}
+
+.Count6 {
+  color:#007280;
+}
+
+.Count7 {
+  color:#080a09;
+}
+
+.Count8 {
+  color:#7c7c7c;
 }
 
 .Dead {
   width: auto;
   height: auto;
-  border-width: 2px;
-  border-color: red;
+  border-width: 1px;
+  border-color: #555555;
+
   border-style: solid;
   background: red;
 }
