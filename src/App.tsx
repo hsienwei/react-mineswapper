@@ -141,7 +141,8 @@ class Game {
             return;
         }
 
-        Game.open([index], game, col);
+        if( game.gridState[index].state === GridState.BLOCKED)
+            Game.open([index], game, col);
     }
                             
     public static open(indexList: number[], game: Game, col: number) {
@@ -149,7 +150,12 @@ class Game {
     
         while (checkIndex < indexList.length) {
             const currentIndex = indexList[checkIndex];
-            if (game.gridState[currentIndex].mineAroundCount !== 0)
+            if (game.gridState[currentIndex].isMine )
+            {
+                game.gridState[currentIndex].state = GridState.BOMB;
+            }
+
+            else if (game.gridState[currentIndex].mineAroundCount !== 0)
                 game.gridState[currentIndex].state = GridState.OPENED;
             else {
                 game.gridState[currentIndex].state = GridState.OPENED;
@@ -162,11 +168,10 @@ class Game {
                     for (let j: number = targetCol - 1; j <= targetCol + 1; ++j) {
                         if (j < 0) continue;
                         if (j >= col) continue;
-                        if(game.gridState[j + i * col].state === GridState.BLOCKED)
-                {
-                        if (!indexList.includes(j + i * col))
-                            indexList.push(j + i * col);
-                }
+                        if (game.gridState[j + i * col].state === GridState.BLOCKED) {
+                            if (!indexList.includes(j + i * col))
+                                indexList.push(j + i * col);
+                        }
                     }
                 }
             }
