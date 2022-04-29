@@ -124,8 +124,8 @@ class Game {
                 if (j >= col) continue;
                 if(game.gridState[j + i * col].state === GridState.BLOCKED)
                 {
-                if (!openIndexList.includes(j + i * col))
-                    openIndexList.push(j + i * col);
+                    if (!openIndexList.includes(j + i * col))
+                        openIndexList.push(j + i * col);
                 }
             }
         }
@@ -271,7 +271,11 @@ function App() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
             </header>
-
+            <div className='OuterFrame'>
+            <div className='InnerFrame InfoFrame'>
+                <div className='Face'>🙂</div> 
+            </div >
+            <div className='InnerFrame'>
             {createGame(level.col, level.row, game.gridState,
                 (i: number, ev: MouseEvent) => {
                     console.log(ev)
@@ -309,6 +313,8 @@ function App() {
                     console.log("Clicked" + (i));
                     console.log("Clicked" + game.gridState[i].state);
                 })}
+
+            </div></div>
 
             <div onClick={
                 () => {
