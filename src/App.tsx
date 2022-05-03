@@ -25,10 +25,19 @@ class BlockState {
     }
 }
 
+enum GameState
+{
+    idle,
+    runnging,
+    dead,
+    win
+}
+
 class Game {
     public openCount: number = 0;
     public gridState: BlockState[];
     public col: number;
+    public gameState: GameState = GameState.idle;
 
     public static initGame = new Game(levelSetting[0]);
 
@@ -256,15 +265,33 @@ document.documentElement.addEventListener('contextmenu', function (ev) {
 }, false);
 
 let clickCount = 0;
+let clickTimer: any;
 
 function App() {
     const [level, setLevel] = useState(levelSetting[0]);
+    const [startTime, setStartTime] = useState(0);
+    const [passTime, setPassTime] = useState(0);
     const [game, setGame] = useState(Game.initGame);
 
     useEffect(() => {
         document.documentElement.style.setProperty('--col', `${level.col}`);
         document.documentElement.style.setProperty('--row', `${level.row}`);
     }, [level]);
+
+    useEffect(() => {
+        if(startTime !== 0)
+        {
+            setPassTime(0);
+            clickTimer = setInterval( () => {
+                setPassTime( Math.floor(( Date.now() - startTime) / 1000));
+            }, 1000);
+        }
+        else
+        {
+            clearInterval(clickTimer);
+            setPassTime(0);
+        }
+    }, [startTime]);
 
     return (
         <div className="App">
@@ -273,12 +300,21 @@ function App() {
             </header>
             <div className='OuterFrame'>
             <div className='InnerFrame InfoFrame'>
-                <div className='Face'>🙂</div> 
+                <div className='Mine'>000</div> 
+                <div className='Face' onClick={ () => {
+                    setGame(new Game(level));
+                    setStartTime(0);
+                }}>🙂</div> 
+                <div className='Time'>{passTime.toString().padStart(3, "0") }</div> 
             </div >
             <div className='InnerFrame'>
             {createGame(level.col, level.row, game.gridState,
                 (i: number, ev: MouseEvent) => {
                     console.log(ev)
+                    if(startTime === 0)
+                    {
+                        setStartTime(Date.now());
+                    }
                     if (clickCount === 2) {
                         console.log("clear");
                         if (game.gridState[i].state === GridState.OPENED) {
@@ -320,17 +356,20 @@ function App() {
                 () => {
                     setLevel(levelSetting[0]);
                     setGame(new Game(levelSetting[0]));
+                    setStartTime(0);
                 }}>{`${levelSetting[0].col} * ${levelSetting[0].row}  mine: ${levelSetting[0].mine}`}</div>
             <div onClick={
                 () => {
                     setLevel(levelSetting[1]);
                     setGame(new Game(levelSetting[1]));
+                    setStartTime(0);
                 }}>{`${levelSetting[1].col} * ${levelSetting[1].row}  mine: ${levelSetting[1].mine}`}</div>
 
             <div onClick={
                 () => {
                     setLevel(levelSetting[2]);
                     setGame(new Game(levelSetting[2]));
+                    setStartTime(0);
                 }}>{`${levelSetting[2].col} * ${levelSetting[2].row}  mine: ${levelSetting[2].mine}`}</div>
 
             <div onClick={
@@ -338,11 +377,13 @@ function App() {
                     const level = { col: 20, row: 20, mine: 60 };
                     setLevel(level);
                     setGame(new Game(level));
+                    setStartTime(0);
                 }}>Customize  </div>
 
             <div onClick={
                 () => {
                     setGame(new Game(level));
+                    setStartTime(0);
                 }}>Reset</div>
         </div>
 

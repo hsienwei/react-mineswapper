@@ -59,12 +59,30 @@
 }
 
 .InfoFrame{
-  
+  display: flex;
   width: auto;
   height: 60px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Time {
+  font-family: digital7;
+  color: red;
+  font-size: 40px;
+  background-color: black;
+  margin: 5px;
+}
+
+.Mine {
+  font-family: digital7;
+  color: red;
+  font-size: 40px;
+  background-color: black;
+  margin: 5px;
 }
 
 .Face {
@@ -75,12 +93,17 @@
   position:relative;
   width: 40px;
   height: 40px;
-  left: 50%;
+  /*left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);*/
   font-size: 25px;
   line-height: 40px;
   text-align: center;
+
+}
+.Face:active
+{
+  border-style: inset;
 }
 
 .Grid {
@@ -115,6 +138,16 @@
   background: #dddddd;
 }
 
+@font-face {
+  font-family: ARCADECLASSIC;
+  src: url("/public/ARCADECLASSIC.TTF");
+}
+
+@font-face {
+  font-family: digital7;
+  src: url("/public/digital-7.ttf");
+}
+
 .Open {
   width: auto;
   height: auto;
@@ -122,8 +155,9 @@
   border-color: #bbbbbb;
   border-style: solid;
   background: #eeeeee;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 28px;
+  
+  font-family: ARCADECLASSIC;
 }
 
 .Count1 {
