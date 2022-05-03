@@ -33,11 +33,20 @@ enum GameState
     win
 }
 
+
+enum GridState {
+    BLOCKED,
+    OPENED,
+    HOLD,
+    BOMB
+}
+
 class Game {
     public openCount: number = 0;
     public gridState: BlockState[];
     public col: number;
     public gameState: GameState = GameState.idle;
+    public mineCount: number = 0;
 
     public static initGame = new Game(levelSetting[0]);
 
@@ -122,6 +131,9 @@ class Game {
 
         const targetCol: number = index % col;
         const targetRow: number = Math.floor(index / col);
+        let flagCount: number = 0;
+
+        const mineCount: number = game.gridState[index].mineAroundCount;
 
         const openIndexList: number[] = [];
 
@@ -136,10 +148,18 @@ class Game {
                     if (!openIndexList.includes(j + i * col))
                         openIndexList.push(j + i * col);
                 }
+                if(game.gridState[j + i * col].state === GridState.HOLD)
+                {
+                    flagCount++;
+                }
             }
         }
-        console.log(openIndexList);
-        Game.open(openIndexList, game, col);
+
+        if(mineCount === flagCount)
+        {
+            console.log(openIndexList);
+            Game.open(openIndexList, game, col);
+        }
     }
 
     public static openSingle(index: number, game: Game, col: number) {
@@ -147,6 +167,7 @@ class Game {
         if (game.gridState[index].isMine)
         {
             game.gridState[index].state = GridState.BOMB;
+            game.gameState = GameState.dead;
             return;
         }
 
@@ -162,6 +183,7 @@ class Game {
             if (game.gridState[currentIndex].isMine )
             {
                 game.gridState[currentIndex].state = GridState.BOMB;
+                game.gameState = GameState.dead;
             }
 
             else if (game.gridState[currentIndex].mineAroundCount !== 0)
@@ -191,12 +213,6 @@ class Game {
 
 }
 
-enum GridState {
-    BLOCKED,
-    OPENED,
-    HOLD,
-    BOMB
-}
 
 function getAppearClass(state: BlockState) {
     switch (state.state) {
@@ -300,12 +316,12 @@ function App() {
             </header>
             <div className='OuterFrame'>
             <div className='InnerFrame InfoFrame'>
-                <div className='Mine'>000</div> 
+                <div className='Mine'>{game.mineCount.toString().padStart(3, "0")}</div> 
                 <div className='Face' onClick={ () => {
                     setGame(new Game(level));
                     setStartTime(0);
-                }}>🙂</div> 
-                <div className='Time'>{passTime.toString().padStart(3, "0") }</div> 
+                }}>{game.gameState === GameState.dead ?"😫":"🙂"}</div> 
+                <div className='Time'>{Math.min(999, passTime).toString().padStart(3, "0") }</div> 
             </div >
             <div className='InnerFrame'>
             {createGame(level.col, level.row, game.gridState,
@@ -333,9 +349,15 @@ function App() {
                     else if (ev.button === 2) {
                         if (clickCount === 1) {
                             if (game.gridState[i].state === GridState.HOLD)
+                            {
                                 game.gridState[i].state = GridState.BLOCKED;
+                                game.mineCount--;
+                            }
                             else if (game.gridState[i].state === GridState.BLOCKED)
+                            {
                                 game.gridState[i].state = GridState.HOLD;
+                                game.mineCount++;
+                            }
                         }
 
                     }
