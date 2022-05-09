@@ -57,19 +57,18 @@ function createGameGrid(col: number, row: number, gridState: BlockState[], call:
 function createGame(col: number, row: number, gridState: BlockState[], call: Function) {
     return (
         <div className='InnerFrame'>
-        <div className='Grid'>
-            {createGameGrid(col, row, gridState, call)}
-        </div>
+            <div className='Grid'>
+                {createGameGrid(col, row, gridState, call)}
+            </div>
         </div>
     )
 }
 
 
 
-export default function MainGame(props: {level: ILevel; game: Game; onMouseEvent: Function})
+export default function MainGame(props: { game: Game; onMouseEvent: Function})
 {
     return (
-        createGame(props.level.col, props.level.row, props.game.gridState, props.onMouseEvent
-            )
+        createGame(props.game.level.col, props.game.level.row, props.game.gridState, props.onMouseEvent)
     )
 }

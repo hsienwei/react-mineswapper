@@ -7,20 +7,19 @@ import { Game,  levelSetting, GridState} from '../../api/Game'
 import Countdown from "./Countdown"
 import ResetButton from "./ResetButton"
 import MainGame from "./MainGame"
+import MenuButton from '../menu/MenuButton';
 
 let clickCount = 0;
 
 function MineSwapper() {
 
-    const [level, setLevel] = useState(levelSetting.low);
-    const [startTime, setStartTime] = useState(0);
-   // 
+    //const [startTime, setStartTime] = useState(0);
     const [game, setGame] = useState(Game.initGame);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--col', `${level.col}`);
-        document.documentElement.style.setProperty('--row', `${level.row}`);
-    }, [level]);
+        document.documentElement.style.setProperty('--col', `${game.level.col}`);
+        document.documentElement.style.setProperty('--row', `${game.level.row}`);
+    }, [game.level]);
 
     
 
@@ -31,45 +30,27 @@ function MineSwapper() {
                     <div className='Mine'>{(game.totalMineCount - game.mineCount).toString().padStart(3, "0")}</div>
                     <ResetButton 
                         onClick={() => {
-                            setGame(new Game(level));
-                            setStartTime(0);
+                            setGame(new Game(game.level));
                         }}
                         gameState={game.gameState}></ResetButton>
-                    <Countdown startTime={startTime}></Countdown>
+                    <Countdown startTime={game.startTime} gameState={game.gameState}></Countdown>
                 </div >
                 <MainGame 
                     game={game}
-                    level={level}
                     onMouseEvent={(i: number, ev: MouseEvent) => {
-                        console.log(ev)
-                        if (startTime === 0) {
-                            setStartTime(Date.now());
-                        }
+
                         if (clickCount === 2) {
                             console.log("clear");
-                            if (game.gridState[i].state === GridState.OPENED) {
-                                Game.openRange(i, game, level.col);
-                            }
+                            Game.openRange(i, game);
                         }
                         if (ev.button === 0) {
                             if (clickCount === 1) {
-                                if (game.gridState[i].state !== GridState.HOLD) {
-                                    if (game.openCount === 0)
-                                        Game.avoidFirstClickDead(i, game);
-                                    Game.openSingle(i, game, level.col);
-                                }
+                                Game.mouseLeftClick(i, game);
                             }
                         }
                         else if (ev.button === 2) {
                             if (clickCount === 1) {
-                                if (game.gridState[i].state === GridState.HOLD) {
-                                    game.gridState[i].state = GridState.BLOCKED;
-                                    game.mineCount--;
-                                }
-                                else if (game.gridState[i].state === GridState.BLOCKED) {
-                                    game.gridState[i].state = GridState.HOLD;
-                                    game.mineCount++;
-                                }
+                                Game.mouseRightClick(i, game);
                             }
 
                         }
@@ -87,39 +68,43 @@ function MineSwapper() {
 
 
             </div>
-            <div onClick={
-                () => {
-                    setLevel(levelSetting.low);
-                    setGame(new Game(levelSetting.low));
-                    setStartTime(0);
-                }}>{`${levelSetting.low.col} * ${levelSetting.low.row}  mine: ${levelSetting.low.mine}`}</div>
-            <div onClick={
-                () => {
-                    setLevel(levelSetting.mid);
-                    setGame(new Game(levelSetting.mid));
-                    setStartTime(0);
-                }}>{`${levelSetting.mid.col} * ${levelSetting.mid.row}  mine: ${levelSetting.mid.mine}`}</div>
+            
+            <MenuButton
+                level={levelSetting.low}
+                onClick={
+                    () => {
+                        setGame(new Game(levelSetting.low));
+                    }}></MenuButton>
+            <MenuButton
+                level={levelSetting.mid}
+                onClick={
+                    () => {
+                        setGame(new Game(levelSetting.mid));
+                    }}></MenuButton>
 
-            <div onClick={
-                () => {
-                    setLevel(levelSetting.high);
-                    setGame(new Game(levelSetting.high));
-                    setStartTime(0);
-                }}>{`${levelSetting.high.col} * ${levelSetting.high.row}  mine: ${levelSetting.high.mine}`}</div>
+            <MenuButton
+                level={levelSetting.high}
+                onClick={
+                    () => {
+                        setGame(new Game(levelSetting.high));
+                    }}></MenuButton>
 
-            <div onClick={
-                () => {
-                    const level = { col: 20, row: 20, mine: 60 };
-                    setLevel(level);
-                    setGame(new Game(level));
-                    setStartTime(0);
-                }}>Customize  </div>
+            <MenuButton
+                label="Customize"
+                level={{ col: 20, row: 20, mine: 60 }}
+                onClick={
+                    () => {
+                        const level = { col: 20, row: 20, mine: 60 };
+                        setGame(new Game(level));
+                    }}></MenuButton>
 
-            <div onClick={
-                () => {
-                    setGame(new Game(level));
-                    setStartTime(0);
-                }}>Reset</div>
+            <MenuButton
+                label="Reset"
+                level={game.level}
+                onClick={
+                    () => {
+                        setGame(new Game(game.level));
+                    }}></MenuButton>
         </>
     );
 
