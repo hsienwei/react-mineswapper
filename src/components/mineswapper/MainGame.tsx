@@ -1,4 +1,5 @@
-import { BlockState, Game, GridState, ILevel } from "../../api/Game";
+import { useContext, useEffect } from "react";
+import { BlockState, Game, GridState, ILevel, MineGame } from "../../api/Game";
 
 
 
@@ -64,11 +65,49 @@ function createGame(col: number, row: number, gridState: BlockState[], call: Fun
     )
 }
 
+let clickCount = 0;
 
-
-export default function MainGame(props: { game: Game; onMouseEvent: Function})
+export default function MainGame()
 {
+    const game = useContext(MineGame);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--col', `${game.value.level.col}`);
+        document.documentElement.style.setProperty('--row', `${game.value.level.row}`);
+    });
+    
     return (
-        createGame(props.game.level.col, props.game.level.row, props.game.gridState, props.onMouseEvent)
+        <MineGame.Consumer>
+            {({ value, setter }) => (
+                createGame(value.level.col, value.level.row, value.gridState, (i: number, ev: MouseEvent) => {
+
+                    if (clickCount === 2) {
+                        console.log("clear");
+                        Game.openRange(i, value);
+                    }
+                    if (ev.button === 0) {
+                        if (clickCount === 1) {
+                            Game.mouseLeftClick(i, value);
+                        }
+                    }
+                    else if (ev.button === 2) {
+                        if (clickCount === 1) {
+                            Game.mouseRightClick(i, value);
+                        }
+
+                    }
+
+                    if (ev.type === "mousedown")
+                        clickCount++;
+                    else if (ev.type === "mouseup")
+                        clickCount--;
+
+                        setter({ ...value });
+                    //<MineGame.Provider value={{ ...game }}></MineGame.Provider>
+                    console.log("Clicked" + (i));
+                    console.log("Clicked" + value.gridState[i].state);
+                })
+            )}
+        </MineGame.Consumer>
     )
 }

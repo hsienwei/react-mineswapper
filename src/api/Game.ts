@@ -1,3 +1,5 @@
+import { createContext } from "react";
+
 export interface ILevel {
     col: number;
     row: number;
@@ -260,4 +262,6 @@ export class Game {
     }
 
 }
+
+export const MineGame = createContext( {value: Game.initGame, setter: (game: Game) => {}} );
 
