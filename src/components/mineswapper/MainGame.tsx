@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { BlockState, Game, GridState, ILevel, MineGame } from "../../api/Game";
+import { BlockState, Game, GridState, MineGame } from "../../api/Game";
 
 
 
