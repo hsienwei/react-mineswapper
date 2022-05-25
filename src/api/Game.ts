@@ -45,7 +45,6 @@ export class Game {
     public level: ILevel;
     public gameState: GameState = GameState.idle;
     public mineCount: number = 0;
-    public totalMineCount: number = 0;
     public startTime: number = 0;
 
     public static initGame = new Game(levelSetting.low);
@@ -53,26 +52,32 @@ export class Game {
     constructor(level: ILevel)
     {
         this.level = level;
-        this.totalMineCount = level.mine;
         this.gridState =  Game.getInitGrid(level);
         this.startTime = 0;
     }
 
-    private static getMineCount(gridState: BlockState[], index: number, col: number) {
+    private static checkRangeIndexLegal(gridState: BlockState[], index: number, col: number, callback: (index : number) => void) {
         const targetCol: number = index % col;
         const targetRow: number = Math.floor(index / col);
-    
-        let totalCount: number = 0;
-    
+
         for (let i = targetRow - 1; i <= targetRow + 1; ++i) {
             if (i < 0) continue;
             if (i >= Math.floor(gridState.length / col)) continue;
             for (let j: number = targetCol - 1; j <= targetCol + 1; ++j) {
                 if (j < 0) continue;
                 if (j >= col) continue;
-                totalCount += gridState[j + i * col].isMine ? 1 : 0;
+                callback(j + i * col);
             }
         }
+    }
+
+    private static getMineCount(gridState: BlockState[], index: number, col: number) {
+        let totalCount: number = 0;
+        Game.checkRangeIndexLegal(gridState, index, col,
+            (index: number) => {
+                if(gridState[index].isMine)  
+                    totalCount++;
+            });
     
         return totalCount;
     }
@@ -170,31 +175,22 @@ export class Game {
         if( game.gridState[index].state !== GridState.OPENED) 
             return;
 
-        const targetCol: number = index % game.level.col;
-        const targetRow: number = Math.floor(index / game.level.col);
         let flagCount: number = 0;
 
         const mineCount: number = game.gridState[index].mineAroundCount;
 
         const openIndexList: number[] = [];
 
-        for (let i = targetRow - 1; i <= targetRow + 1; ++i) {
-            if (i < 0) continue;
-            if (i >= Math.floor(game.gridState.length / game.level.col)) continue;
-            for (let j: number = targetCol - 1; j <= targetCol + 1; ++j) {
-                if (j < 0) continue;
-                if (j >= game.level.col) continue;
-                if(game.gridState[j + i * game.level.col].state === GridState.BLOCKED)
-                {
-                    if (!openIndexList.includes(j + i * game.level.col))
-                        openIndexList.push(j + i * game.level.col);
+        Game.checkRangeIndexLegal(game.gridState, index, game.level.col, 
+            (index: number) => {
+                if (game.gridState[index].state === GridState.BLOCKED) {
+                    if (!openIndexList.includes(index))
+                        openIndexList.push(index);
                 }
-                if(game.gridState[j + i * game.level.col].state === GridState.HOLD)
-                {
+                if (game.gridState[index].state === GridState.HOLD) {
                     flagCount++;
                 }
-            }
-        }
+            });
 
         if(mineCount === flagCount)
         {
@@ -235,21 +231,14 @@ export class Game {
                 game.gridState[currentIndex].state = GridState.OPENED;
             else {
                 game.gridState[currentIndex].state = GridState.OPENED;
-                const targetCol: number = currentIndex % game.level.col;
-                const targetRow: number = Math.floor(currentIndex / game.level.col);
-    
-                for (let i = targetRow - 1; i <= targetRow + 1; ++i) {
-                    if (i < 0) continue;
-                    if (i >= Math.floor(game.gridState.length / game.level.col)) continue;
-                    for (let j: number = targetCol - 1; j <= targetCol + 1; ++j) {
-                        if (j < 0) continue;
-                        if (j >= game.level.col) continue;
-                        if (game.gridState[j + i * game.level.col].state === GridState.BLOCKED) {
-                            if (!indexList.includes(j + i * game.level.col))
-                                indexList.push(j + i * game.level.col);
+
+                Game.checkRangeIndexLegal(game.gridState, currentIndex, game.level.col, 
+                    (index: number) => {
+                        if (game.gridState[index].state === GridState.BLOCKED) {
+                            if (!indexList.includes(index))
+                                indexList.push(index);
                         }
-                    }
-                }
+                    });
             }
             checkIndex++;
             game.openCount++;

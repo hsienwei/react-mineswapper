@@ -102,8 +102,7 @@ export default function MainGame()
                     else if (ev.type === "mouseup")
                         clickCount--;
 
-                        setter({ ...value });
-                    //<MineGame.Provider value={{ ...game }}></MineGame.Provider>
+                    setter({ ...value });
                     console.log("Clicked" + (i));
                     console.log("Clicked" + value.gridState[i].state);
                 })

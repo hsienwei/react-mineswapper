@@ -20,7 +20,7 @@ function MineSwapper() {
         <MineGame.Provider value={{ value: game, setter: (game: Game) => {setGame(game)}}}>
             <div className='OuterFrame'>
                 <div className='InnerFrame InfoFrame'>
-                    <div className='Mine'>{(game.totalMineCount - game.mineCount).toString().padStart(3, "0")}</div>
+                    <div className='Mine'>{(game.level.mine - game.mineCount).toString().padStart(3, "0")}</div>
                     <ResetButton 
                         onClick={() => {
                             setGame(new Game(game.level));
@@ -35,7 +35,6 @@ function MineSwapper() {
             <MenuButton level={levelSetting.mid}></MenuButton>
             <MenuButton level={levelSetting.high}></MenuButton>
             <MenuButton label="Customize" level={{ col: 20, row: 20, mine: 60 }}></MenuButton>
-            <MenuButton label="Reset" level={game.level}></MenuButton>
         </MineGame.Provider>
     );
 
