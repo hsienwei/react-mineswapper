@@ -3,7 +3,7 @@
 }
 
 .App-logo {
-  height: 20vmin;
+  height: 10vmin;
   pointer-events: none;
 }
 
@@ -34,6 +34,11 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.MinesSwapper
+{
+  user-select: none;
 }
 
 .OuterFrame {
@@ -70,6 +75,7 @@
 }
 
 .Time {
+  height: fit-content;
   font-family: digital7;
   color: red;
   font-size: 40px;
@@ -78,6 +84,7 @@
 }
 
 .Mine {
+  height: fit-content;
   font-family: digital7;
   color: red;
   font-size: 40px;
@@ -96,8 +103,8 @@
   font-size: 25px;
   line-height: 40px;
   text-align: center;
-
 }
+
 .Face:active
 {
   border-style: inset;
@@ -109,50 +116,46 @@
   margin-right: auto;
   width: fit-content;
   display: grid;
-  grid-template-columns: repeat(var(--col),30px);
-  grid-template-rows: repeat(var(--row),30px);
+  grid-template-columns: repeat(var(--col),35px);
+  grid-template-rows: repeat(var(--row),35px);
 }
+
 
 
 
 
 .Block {
-  width: auto;
-  height: auto;
+  
   border-width: 4px;
   border-color: #ffffff;
   border-style: outset;
   background: #dddddd;
-
+}
+.Block:active
+{
+  border-style: inset;
 }
 
 .Hold {
-  width: auto;
-  height: auto;
+  
   border-width: 4px;
   border-color: #ffffff;
   border-style: outset;
   background: #dddddd;
-}
-
-@font-face {
-  font-family: ARCADECLASSIC;
-  src: url("/public/ARCADECLASSIC.TTF");
-}
-
-@font-face {
-  font-family: digital7;
-  src: url("/public/digital-7.ttf");
+  font-size: 20px;
+  line-height: 27px;
+  text-align: center;
 }
 
 .Open {
-  width: auto;
-  height: auto;
+  
   border-width: 1px;
   border-color: #bbbbbb;
   border-style: solid;
   background: #eeeeee;
   font-size: 28px;
+  line-height: 35px;
+  text-align: center;
   
   font-family: ARCADECLASSIC;
 }
@@ -190,11 +193,14 @@
 }
 
 .Dead {
-  width: auto;
-  height: auto;
+
   border-width: 1px;
   border-color: #555555;
 
   border-style: solid;
   background: red;
+  font-size: 20px;
+  line-height: 35px;
+  text-align: center;
+
 }

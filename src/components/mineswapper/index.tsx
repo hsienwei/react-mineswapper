@@ -18,7 +18,7 @@ function MineSwapper() {
     return (
         
         <MineGame.Provider value={{ value: game, setter: (game: Game) => {setGame(game)}}}>
-            <div className='OuterFrame'>
+            <div className='MinesSwapper OuterFrame'>
                 <div className='InnerFrame InfoFrame'>
                     <div className='Mine'>{(game.level.mine - game.mineCount).toString().padStart(3, "0")}</div>
                     <ResetButton 
