@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { GameState } from "../../api/Game";
+import DigitalBoard from "./DigitalBoard";
 
 
 let clickTimer: any;
@@ -31,6 +32,6 @@ export default function Countdown(props: {startTime: number, gameState: GameStat
     }, [props.startTime, props.gameState]);
 
     return (
-        <div className='Time' >{Math.min(999, passTime).toString().padStart(3, "0")}</div>
-        )
+        <DigitalBoard val={Math.min(999, passTime)} />
+    )
 }

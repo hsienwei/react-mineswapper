@@ -8,6 +8,7 @@ import Countdown from "./Countdown"
 import ResetButton from "./ResetButton"
 import MainGame from "./MainGame"
 import MenuButton from '../menu/MenuButton';
+import DigitalBoard from './DigitalBoard';
 
 
 
@@ -20,7 +21,7 @@ function MineSwapper() {
         <MineGame.Provider value={{ value: game, setter: (game: Game) => {setGame(game)}}}>
             <div className='MinesSwapper OuterFrame'>
                 <div className='InnerFrame InfoFrame'>
-                    <div className='Mine'>{(game.level.mine - game.mineCount).toString().padStart(3, "0")}</div>
+                    <DigitalBoard val={(game.level.mine - game.mineCount)}/>
                     <ResetButton 
                         onClick={() => {
                             setGame(new Game(game.level));

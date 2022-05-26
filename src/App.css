@@ -74,23 +74,25 @@
   align-items: center;
 }
 
-.Time {
-  height: fit-content;
-  font-family: digital7;
-  color: red;
-  font-size: 40px;
+.DigitalBack {
+  height:36px;
   background-color: black;
   margin: 5px;
+  padding: 2px;
 }
 
-.Mine {
+.DigitalInner {
+  position:relative;
+  top: 50%;
+  transform: translate(0, -50%);
   height: fit-content;
+  min-height: 30px;
   font-family: digital7;
   color: red;
   font-size: 40px;
-  background-color: black;
-  margin: 5px;
+
 }
+
 
 .Face {
   border-width: 4px;
