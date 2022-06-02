@@ -5,18 +5,10 @@ import './App.css';
 import MineSwapper from "./components/mineswapper/index"
 
 
-
-
-
-
-
-
 document.documentElement.addEventListener('contextmenu', function (ev) {
     ev.preventDefault();
     return false;
 }, false);
-
-
 
 function App() {
 

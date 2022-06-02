@@ -27,15 +27,15 @@ function MineSwapper() {
                             setGame(new Game(game.level));
                         }}
                         gameState={game.gameState}></ResetButton>
-                    <Countdown startTime={game.startTime} gameState={game.gameState}></Countdown>
+                    <Countdown startTime={game.startTime} gameState={game.gameState}/>
                 </div >
                 <MainGame />
             </div>
             
-            <MenuButton level={levelSetting.low}></MenuButton>
-            <MenuButton level={levelSetting.mid}></MenuButton>
-            <MenuButton level={levelSetting.high}></MenuButton>
-            <MenuButton label="Customize" level={{ col: 20, row: 20, mine: 60 }}></MenuButton>
+            <MenuButton level={levelSetting.low}/>
+            <MenuButton level={levelSetting.mid}/>
+            <MenuButton level={levelSetting.high}/>
+            <MenuButton label="Customize" level={{ col: 20, row: 20, mine: 60 }}/>
         </MineGame.Provider>
     );
 

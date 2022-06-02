@@ -15,7 +15,6 @@ function getResetIcon(state: GameState)
 
 export default function ResetButton(props: { onClick: ()=>void;  gameState: GameState  })
 {
-
     return (
         <div className='Face' onClick={props.onClick}>{getResetIcon(props.gameState)}</div>
     )

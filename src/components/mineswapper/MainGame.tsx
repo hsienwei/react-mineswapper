@@ -38,14 +38,16 @@ function getGridDisplay(gridState: BlockState[], index: number) {
 
 function createGameGrid(col: number, row: number, gridState: BlockState[], call: Function) {
     const list: any[] = [];
+    let index: number;
     for (let i: number = 0; i < row; ++i) {
         for (let j: number = 0; j < col; ++j) {
+            index = j + i * col;
             const div = <div
-                className={getAppearClass(gridState[j + i * col])}
-                onMouseDown={call.bind(null, j + i * col)}
-                onMouseUp={call.bind(null, j + i * col)}
+                className={getAppearClass(gridState[index])}
+                onMouseDown={call.bind(null, index)}
+                onMouseUp={call.bind(null, index)}
                 key={`${i}_${j}`}>
-                {getGridDisplay(gridState, j + i * col)}
+                {getGridDisplay(gridState, index)}
             </div>;
             list.push(div);
         }

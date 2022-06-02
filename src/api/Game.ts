@@ -226,10 +226,10 @@ export class Game {
                 game.gridState[currentIndex].state = GridState.BOMB;
                 game.gameState = GameState.dead;
             }
-
             else if (game.gridState[currentIndex].mineAroundCount !== 0)
                 game.gridState[currentIndex].state = GridState.OPENED;
-            else {
+            else 
+            {
                 game.gridState[currentIndex].state = GridState.OPENED;
 
                 Game.checkRangeIndexLegal(game.gridState, currentIndex, game.level.col, 
