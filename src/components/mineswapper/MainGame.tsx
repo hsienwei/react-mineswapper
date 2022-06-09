@@ -25,7 +25,11 @@ function getGridDisplay(gridState: BlockState[], index: number) {
         return "💣";
 
     if (gridState[index].state === GridState.OPENED)
+    {
+        if(gridState[index].isMine)
+            return "💣";
         return gridState[index].mineAroundCount === 0 ? "" : gridState[index].mineAroundCount;
+    }
 
     if (gridState[index].state === GridState.HOLD)
         return "🚩";

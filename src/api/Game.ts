@@ -204,7 +204,7 @@ export class Game {
         if (game.gridState[index].isMine)
         {
             game.gridState[index].state = GridState.BOMB;
-            game.gameState = GameState.dead;
+            Game.endGame(game, false);
             return;
         }
 
@@ -224,7 +224,7 @@ export class Game {
             if (game.gridState[currentIndex].isMine )
             {
                 game.gridState[currentIndex].state = GridState.BOMB;
-                game.gameState = GameState.dead;
+                Game.endGame(game, false);
             }
             else if (game.gridState[currentIndex].mineAroundCount !== 0)
                 game.gridState[currentIndex].state = GridState.OPENED;
@@ -246,8 +246,26 @@ export class Game {
 
         if(game.openCount === (game.level.col * game.level.row - game.level.mine))
         {
-            game.gameState = GameState.win;
+            Game.endGame(game, true);
         }
+    }
+
+    public static endGame(game: Game, isWin: boolean): void
+    {
+        game.gameState = isWin? GameState.win : GameState.dead;
+        Game.showAllMine(game);
+    }
+
+    public static showAllMine(game: Game) { 
+        for (let i = 0; i < game.gridState.length; ++i) {
+            if(game.gridState[i].isMine)
+            {
+                if(game.gridState[i].state === GridState.BLOCKED)
+                {
+                    game.gridState[i].state = GridState.OPENED;
+                }
+            }
+        }        
     }
 
 }
