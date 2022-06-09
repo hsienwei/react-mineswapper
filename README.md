@@ -1,7 +1,7 @@
 A Mine Swapper game create using React.   
 Project for React practice.   
 Use `Create React App` to create the initial setting.   
-[Demo](https://react-swapper.netlify.app)  
+[Demo](https://react-mineswapper.netlify.app/)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/6600c83f-9c61-44ca-8ff8-2eac629e508e/deploy-status)](https://app.netlify.com/sites/react-mineswapper/deploys)
 
